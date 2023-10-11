@@ -80,6 +80,28 @@ class NewsletterByID(Resource):
 
         return response
 
+    def patch(self, id):
+        newsletter = Newsletter.query.filter_by(id=id).first()  
+
+        # If data in body of request is a form and not JSON
+        # for attr in request.form:
+        # setattr(newsletter, attr, request.form[attr])
+
+        for key in request.json:
+            setattr(newsletter, key, request.json[key])
+        db.session.add(newsletter)
+        db.session.commit()
+
+        return make_response(newsletter.to_dict(), 202)
+    
+    def delete(self, id):
+        newsletter = Newsletter.query.filter_by(id=id).first()  
+
+        db.session.delete(newsletter)
+        db.session.commit()
+
+        return make_response({}, 204)
+
 api.add_resource(NewsletterByID, '/newsletters/<int:id>')
 
 
